@@ -22,7 +22,7 @@ static void init_log()
 
     boost::log::add_common_attributes();
 
-    // Only output message with trace or higher severity in Release
+    // Only output message with ebug or higher severity in Release
 #ifndef _DEBUG
     boost::log::core::get()->set_filter(
         boost::log::trivial::severity >= boost::log::trivial::debug

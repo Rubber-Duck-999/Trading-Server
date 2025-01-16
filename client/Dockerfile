@@ -7,10 +7,9 @@ cmake \
 g++
 # Copy all files in folder and lower dirs
 COPY ./core ./core
-COPY ./server ./
+COPY ./client ./
 # Folder for CMAKE for executable creation
 RUN mkdir build
 RUN cd build && cmake .. && make
 # What to call in order to run the exe
-CMD [ "./build/server" ]
-
+CMD [ "./build/client" ]

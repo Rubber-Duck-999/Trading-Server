@@ -1,7 +1,19 @@
 services:
   server:
     image: tcp-server
-    build: ./server
+    build:
+      context: .
+      dockerfile: ./server/Dockerfile
+    restart: always
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "4444:8080"
+  client:
+    image: tcp-client
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"

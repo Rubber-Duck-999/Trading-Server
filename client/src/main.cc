@@ -1,13 +1,13 @@
-#include "server.h"
+#include "client.h"
 
 int main() {
-    Server server = Server();
+    Client client = Client();
     // Setup clients
-    if (!server.SetupConnections()) {
+    if (!client.SetupConnections()) {
         BOOST_LOG_TRIVIAL(error) << "Exiting app";
         return 1;
     }
-    if(!server.AcceptConnections()) {
+    if(!client.CreateConnections()) {
         BOOST_LOG_TRIVIAL(error) << "Exiting app";
         return 1;
     }

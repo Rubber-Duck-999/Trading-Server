@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.22)
 
 # Change project name
-set (PROJECT_NAME server)
+set (PROJECT_NAME client)
 
 project (${PROJECT_NAME} C CXX)
 
@@ -33,7 +33,7 @@ include_directories(${Boost_INCLUDE_DIRS}
 link_directories(${Boost_LIBRARY_DIRS})
 # Important: Include all source files on this list in the right order
 set (SOURCE
-    ${SRC_DIR}/server.cc
+    ${SRC_DIR}/client.cc
     ${SRC_DIR}/main.cc
 )
 
