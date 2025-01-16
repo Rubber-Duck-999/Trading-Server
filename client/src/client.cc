@@ -1,4 +1,4 @@
-#include "client.h"
+#include "Client.h"
 
 bool Client::SetupConnections() {
     struct sockaddr_in server_address;

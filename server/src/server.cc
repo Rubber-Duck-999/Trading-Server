@@ -1,4 +1,4 @@
-#include "server.h"
+#include "Server.h"
 
 bool Server::SetupConnections() {
     // Setup initial variables for assigning address
@@ -9,15 +9,15 @@ bool Server::SetupConnections() {
     BOOST_LOG_TRIVIAL(info) << "Starting TCP Server";
 
     // Create socket file descriptor
-    if ((server_file_descriptor = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    if ((server_file_descriptor_ = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         BOOST_LOG_TRIVIAL(error) << "TCP Socket failed";
         return false;
     }
 
     // Forcefully attach socket to the port
-    if (setsockopt(server_file_descriptor, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+    if (setsockopt(server_file_descriptor_, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
         BOOST_LOG_TRIVIAL(error) << "Socket did not attach";
-        close(server_file_descriptor);
+        close(server_file_descriptor_);
         return false;
     }
 
@@ -28,24 +28,24 @@ bool Server::SetupConnections() {
     address.sin_port = htons(PORT);
 
     // Bind the socket to the port
-    if (bind(server_file_descriptor, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
+    if (bind(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), sizeof(address)) < 0) {
         BOOST_LOG_TRIVIAL(error) << "Bind failed on the port";
-        close(server_file_descriptor);
+        close(server_file_descriptor_);
         return false;
     }
 
     // Start listening for connections
-    if (listen(server_file_descriptor, 3) < 0) {
+    if (listen(server_file_descriptor_, 3) < 0) {
         BOOST_LOG_TRIVIAL(error) << "Listen failed, recieved -1";
-        close(server_file_descriptor);
+        close(server_file_descriptor_);
         return false;
     }
 
     BOOST_LOG_TRIVIAL(info) << "Server is listening on port " << PORT;
 
     // Accept an incoming connection
-    client_file_descriptor = accept(server_file_descriptor, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
-    if (client_file_descriptor < 0) {
+    client_file_descriptor_ = accept(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
+    if (client_file_descriptor_ < 0) {
         BOOST_LOG_TRIVIAL(error) << "Accept incoming connection failed, recieved -1";
     }
 
@@ -53,12 +53,34 @@ bool Server::SetupConnections() {
     return true;
 }
 
-bool Server::AcceptConnections() {
+bool Server::AcceptConnections(OrderBook orderBook) {
+    struct sockaddr_in address;
+    int addrlen = sizeof(address);
+
+    while (true) {
+        // Accept an incoming connection
+        client_file_descriptor_ = accept(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
+        if (client_file_descriptor_ < 0) {
+            BOOST_LOG_TRIVIAL(error) << "Accept incoming connection failed, received -1";
+            continue;  // Proceed to accept the next connection if this one fails
+        }
+
+        BOOST_LOG_TRIVIAL(info) << "Connection established with client";
+
+        // Create a thread for each client connection
+        std::thread client_thread(&Server::HandleClientConnection, this, orderBook);
+        client_thread.detach();  // Detach the thread to run independently
+    }
+
+    return true;
+}
+
+void Server::HandleClientConnection(OrderBook orderBook) {
     // Communicate with the client
     char buffer[BUFFER_SIZE] = {0};
     while (true) {
         memset(buffer, 0, BUFFER_SIZE);
-        int bytes_read = read(client_file_descriptor, buffer, BUFFER_SIZE);
+        int bytes_read = read(client_file_descriptor_, buffer, BUFFER_SIZE);
         if (bytes_read <= 0) {
             BOOST_LOG_TRIVIAL(info) << "Client disconnected";
             break;
@@ -66,17 +88,19 @@ bool Server::AcceptConnections() {
 
         BOOST_LOG_TRIVIAL(info) << "Received: " << buffer << ".";
 
-        // Echo the message back to the client
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+
+        // Process the request and send an order book update
+        orderBook.GenerateRandomData();
+
+        // Send a response back to the client
         std::string custom_message = "Hello from the server!";
-        send(client_file_descriptor,
+        send(client_file_descriptor_,
             custom_message.c_str(),
             custom_message.length(),
             0);
     }
 
-    // Close the sockets
-    close(client_file_descriptor);
-    close(server_file_descriptor);
-
-    return true;
+    // Close the client connection
+    close(client_file_descriptor_);
 }
