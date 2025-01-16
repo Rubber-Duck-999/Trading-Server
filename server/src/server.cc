@@ -56,16 +56,14 @@ bool Server::AcceptConnections(OrderBook orderBook) {
     struct sockaddr_in address;
     int addrlen = sizeof(address);
 
-    while (true) {
-        BOOST_LOG_TRIVIAL(info) << "Connection established with client";
+    BOOST_LOG_TRIVIAL(info) << "Connection established with client";
 
-        try {
-            BOOST_LOG_TRIVIAL(info) << "Creating client thread";
-            boost::thread client_thread(&Server::HandleClientConnection, this, orderBook);
-            client_thread.join();
-        } catch (const std::exception& e) {
-            BOOST_LOG_TRIVIAL(error) << "Error in thread creation: " << e.what();
-        }
+    try {
+        BOOST_LOG_TRIVIAL(info) << "Creating client thread";
+        boost::thread client_thread(&Server::HandleClientConnection, this, orderBook);
+        client_thread.join();
+    } catch (const std::exception& e) {
+        BOOST_LOG_TRIVIAL(error) << "Error in thread creation: " << e.what();
     }
 
     return true;
@@ -77,17 +75,14 @@ void Server::HandleClientConnection(OrderBook orderBook) {
         char buffer[BUFFER_SIZE] = {0};
         BOOST_LOG_TRIVIAL(info) << "Start message session";
         while (true) {
-            BOOST_LOG_TRIVIAL(info) << "Publish order book";
-            // Process the request and send an order book update
-            orderBook.GenerateRandomData();
-
             // Send a response back to the client
-            std::string custom_message = "Hello from the server!";
+            std::string orderBookString = orderBook.GetOrderBookData();
             send(client_file_descriptor_,
-                custom_message.c_str(),
-                custom_message.length(),
+                orderBookString.c_str(),
+                orderBookString.length(),
                 0);
             
+            // REset buffer for client message
             memset(buffer, 0, BUFFER_SIZE);
             int bytes_read = read(client_file_descriptor_, buffer, BUFFER_SIZE);
             if (bytes_read <= 0) {

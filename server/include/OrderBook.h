@@ -2,6 +2,7 @@
 #define ORDERBOOK_h
 
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <cstring>
 #include <cstdlib>
@@ -18,6 +19,7 @@ private:
     std::array<std::string, 5> ask_prices_;
     std::array<std::string, 5> bid_quantities_;
     std::array<std::string, 5> ask_quantities_;
+    std::string order_book_data_;
     // Generate random prices and quantities
     std::string GeneratePrice(int min, int max);
     std::string GenerateQuantity(int min, int max);
@@ -54,7 +56,7 @@ public:
     };
 
     // Method to generate random data for the order book
-    void GenerateRandomData();
+    std::string GetOrderBookData();
 };
 
 #endif 	/* ORDERBOOK_H */

@@ -80,6 +80,7 @@
         "format": "cpp",
         "future": "cpp",
         "shared_mutex": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "strstream": "cpp"
     }
 }
