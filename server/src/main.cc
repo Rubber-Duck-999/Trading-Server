@@ -1,11 +1,10 @@
 #include "Server.h"
 
 int main() {
-    // Create an order book for the asset "ABC"
-    OrderBook orderBook = OrderBook("ABC ");
-
     // Setup TCP server
     Server server = Server();
+
+    OrderBook orderBook = OrderBook("ABC ");
 
     // Setup clients
     if (!server.SetupConnections()) {

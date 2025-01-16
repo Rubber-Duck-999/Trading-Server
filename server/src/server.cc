@@ -57,50 +57,58 @@ bool Server::AcceptConnections(OrderBook orderBook) {
     struct sockaddr_in address;
     int addrlen = sizeof(address);
 
-    while (true) {
-        // Accept an incoming connection
-        client_file_descriptor_ = accept(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
-        if (client_file_descriptor_ < 0) {
-            BOOST_LOG_TRIVIAL(error) << "Accept incoming connection failed, received -1";
-            continue;  // Proceed to accept the next connection if this one fails
-        }
-
-        BOOST_LOG_TRIVIAL(info) << "Connection established with client";
-
-        // Create a thread for each client connection
-        std::thread client_thread(&Server::HandleClientConnection, this, orderBook);
-        client_thread.detach();  // Detach the thread to run independently
+    // Accept an incoming connection
+    client_file_descriptor_ = accept(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
+    if (client_file_descriptor_ < 0) {
+        BOOST_LOG_TRIVIAL(error) << "Accept incoming connection failed, received -1";
+        return false;
     }
+
+    BOOST_LOG_TRIVIAL(info) << "Connection established with client";
+
+    try {
+        BOOST_LOG_TRIVIAL(info) << "Creating client thread";
+        boost::thread client_thread(&Server::HandleClientConnection, this, orderBook);
+        client_thread.join();
+    } catch (const std::exception& e) {
+        BOOST_LOG_TRIVIAL(error) << "Error in thread creation: " << e.what();
+    } 
 
     return true;
 }
 
 void Server::HandleClientConnection(OrderBook orderBook) {
-    // Communicate with the client
-    char buffer[BUFFER_SIZE] = {0};
-    while (true) {
-        memset(buffer, 0, BUFFER_SIZE);
-        int bytes_read = read(client_file_descriptor_, buffer, BUFFER_SIZE);
-        if (bytes_read <= 0) {
-            BOOST_LOG_TRIVIAL(info) << "Client disconnected";
-            break;
+    try {
+        // Communicate with the client
+        char buffer[BUFFER_SIZE] = {0};
+        BOOST_LOG_TRIVIAL(info) << "Start message session";
+        while (true) {
+            BOOST_LOG_TRIVIAL(info) << "Publish order book";
+            // Process the request and send an order book update
+            orderBook.GenerateRandomData();
+
+            // Send a response back to the client
+            std::string custom_message = "Hello from the server!";
+            send(client_file_descriptor_,
+                custom_message.c_str(),
+                custom_message.length(),
+                0);
+            
+            memset(buffer, 0, BUFFER_SIZE);
+            int bytes_read = read(client_file_descriptor_, buffer, BUFFER_SIZE);
+            if (bytes_read <= 0) {
+                BOOST_LOG_TRIVIAL(info) << "Client disconnected";
+                break;
+            }
+
+            BOOST_LOG_TRIVIAL(info) << "Received from client: " << buffer << ".";
+
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
-        BOOST_LOG_TRIVIAL(info) << "Received: " << buffer << ".";
-
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-
-        // Process the request and send an order book update
-        orderBook.GenerateRandomData();
-
-        // Send a response back to the client
-        std::string custom_message = "Hello from the server!";
-        send(client_file_descriptor_,
-            custom_message.c_str(),
-            custom_message.length(),
-            0);
+        // Close the client connection
+        close(client_file_descriptor_);
+    } catch (const std::exception& e) {
+        BOOST_LOG_TRIVIAL(error) << "Error in thread handling: " << e.what();
     }
-
-    // Close the client connection
-    close(client_file_descriptor_);
 }

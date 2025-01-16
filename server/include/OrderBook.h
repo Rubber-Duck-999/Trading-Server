@@ -1,3 +1,6 @@
+#ifndef ORDERBOOK_h
+#define ORDERBOOK_h
+
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -7,8 +10,6 @@
 #include "constants.h"
 #include <arpa/inet.h>
 
-#ifndef ORDERBOOK_h
-#define ORDERBOOK_h
 
 class OrderBook {
 private:
