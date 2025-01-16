@@ -1,20 +1,21 @@
 services:
   server:
+    container_name: tcp_server
     image: tcp-server
     build:
       context: .
       dockerfile: ./server/Dockerfile
     restart: always
-    networks:
-      - tcp_network
+    network_mode: host
+    ports:
+      - "4444:4444"
   client:
+    container_name: tcp_client
     image: tcp-client
     build:
       context: .
       dockerfile: ./client/Dockerfile
     restart: always
-    networks:
-      - tcp_network
-networks:
-  tcp_network:
-    driver: bridge
+    network_mode: host
+    depends_on:
+      - server

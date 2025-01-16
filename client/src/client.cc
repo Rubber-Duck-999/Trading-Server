@@ -14,7 +14,7 @@ bool Client::SetupConnections() {
 
     // Convert IP address from text to binary form
     if (inet_pton(AF_INET, ip_address_, &server_address.sin_addr) <= 0) {
-        BOOST_LOG_TRIVIAL(error) << "Invalid address or address not supported";
+        BOOST_LOG_TRIVIAL(error) << "Invalid address or address not supported " << ip_address_;
         return false;
     }
 

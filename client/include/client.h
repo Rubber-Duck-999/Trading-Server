@@ -16,7 +16,7 @@ private:
     int socket_;
 public:
     Client() {
-        ip_address_ = "server";
+        ip_address_ = "127.0.0.1";
     };
     bool SetupConnections();
     bool CreateConnections();
