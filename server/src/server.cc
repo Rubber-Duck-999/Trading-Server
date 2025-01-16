@@ -4,7 +4,6 @@ bool Server::SetupConnections() {
     // Setup initial variables for assigning address
     struct sockaddr_in address;
     int opt = 1;
-    int addrlen = sizeof(address);
 
     BOOST_LOG_TRIVIAL(info) << "Starting TCP Server";
 
@@ -43,30 +42,33 @@ bool Server::SetupConnections() {
 
     BOOST_LOG_TRIVIAL(info) << "Server is listening on port " << PORT;
 
-    // Accept an incoming connection
-    client_file_descriptor_ = accept(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
-    if (client_file_descriptor_ < 0) {
-        BOOST_LOG_TRIVIAL(error) << "Accept incoming connection failed, recieved -1";
-    }
     return true;
 }
 
-bool Server::AcceptConnections(OrderBook orderBook) {
-    BOOST_LOG_TRIVIAL(info) << "Start established with client";
+void Server::AcceptConnections(OrderBook orderBook) {
+    BOOST_LOG_TRIVIAL(info) << "Wait for incoming client connections";
     struct sockaddr_in address;
     int addrlen = sizeof(address);
 
-    BOOST_LOG_TRIVIAL(info) << "Connection established with client";
+    while (true) {
+        // Accept an incoming connection
+        client_file_descriptor_ = accept(server_file_descriptor_, reinterpret_cast<struct sockaddr*>(&address), reinterpret_cast<socklen_t*>(&addrlen));
+        if (client_file_descriptor_ < 0) {
+            BOOST_LOG_TRIVIAL(error) << "Accept incoming connection failed, received -1";
+            continue;
+        }
 
-    try {
-        BOOST_LOG_TRIVIAL(info) << "Creating client thread";
-        boost::thread client_thread(&Server::HandleClientConnection, this, orderBook);
-        client_thread.join();
-    } catch (const std::exception& e) {
-        BOOST_LOG_TRIVIAL(error) << "Error in thread creation: " << e.what();
+        BOOST_LOG_TRIVIAL(info) << "Connection established with client";
+
+        // Create a thread for handling the client connection
+        try {
+            BOOST_LOG_TRIVIAL(info) << "Creating client thread";
+            boost::thread client_thread(&Server::HandleClientConnection, this, orderBook);
+            client_thread.detach();
+        } catch (const std::exception& e) {
+            BOOST_LOG_TRIVIAL(error) << "Error in thread creation: " << e.what();
+        }
     }
-
-    return true;
 }
 
 void Server::HandleClientConnection(OrderBook orderBook) {
@@ -81,7 +83,7 @@ void Server::HandleClientConnection(OrderBook orderBook) {
                 orderBookString.c_str(),
                 orderBookString.length(),
                 0);
-            
+
             // REset buffer for client message
             memset(buffer, 0, BUFFER_SIZE);
             int bytes_read = read(client_file_descriptor_, buffer, BUFFER_SIZE);

@@ -6,13 +6,12 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/log/trivial.hpp>
-#include "logging.h"
 #include "OrderBook.h"
 
 class Server {
 public:
     bool SetupConnections();
-    bool AcceptConnections(OrderBook ordrBook);
+    void AcceptConnections(OrderBook ordrBook);
 private:
     int server_file_descriptor_;
     int client_file_descriptor_;
