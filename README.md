@@ -8,5 +8,13 @@ Dockerfiles are included to help build on environments so that the software vers
 
 ```bash
 docker compose build
-docker compose up
 ```
+
+Using CMake and Docker for build simplicity
+
+## Run Application
+
+
+
+## Modify commands
+
