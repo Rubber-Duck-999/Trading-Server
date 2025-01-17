@@ -18,6 +18,11 @@ Dockerfiles are included to help build on environments so that the software vers
 docker compose build
 ```
 
+If you want full build outputs from docker
+```bash
+docker compose build --progress=plain --no-cache
+```
+
 Using CMake and Docker for build simplicity
 
 ## Run Application

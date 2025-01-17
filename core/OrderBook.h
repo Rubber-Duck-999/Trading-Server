@@ -7,10 +7,12 @@
 #include <cstring>
 #include <cstdlib>
 #include <unistd.h>
-#include "logging.h"
 #include "constants.h"
 #include <arpa/inet.h>
-
+#include "boost/log/trivial.hpp"
+#include "boost/log/utility/setup.hpp"
+#include <boost/log/utility/setup/common_attributes.hpp>
+#include <iomanip>
 
 class OrderBook {
 private:
@@ -20,15 +22,23 @@ private:
     std::array<std::string, 5> bid_quantities_;
     std::array<std::string, 5> ask_quantities_;
     std::string order_book_data_;
+    // Client points
+    int cumulative_quantity_;
+    int number_of_ticks_;
+    std::string best_bid_;
+    std::string best_ask_;
     // Generate random prices and quantities
     std::string GeneratePrice(int min, int max);
     std::string GenerateQuantity(int min, int max);
     // Random initializer
     void InitializeValues();
+    void DetermineBestBid();
 public:
     OrderBook(const std::string& ticker);
     // GettTers
-    std::string GetTicker() const;
+    std::string GetTicker() const {
+        return ticker_;
+    };
     std::array<std::string, 5> GetBidPrices() const {
         return bid_prices_;
     };
@@ -40,6 +50,12 @@ public:
     };
     std::array<std::string, 5> GetAskQuantities() const {
         return ask_quantities_;
+    };
+    std::string GetBestBid() const {
+        return best_bid_;
+    }
+    std::string GetBestAsk() const {
+        return best_ask_;
     };
     // Setters
     void SetBidPrices(const std::array<std::string, 5>& bidPrices) {
@@ -56,6 +72,7 @@ public:
     };
     std::string GetOrderBookData();
     void ParseOrderBookData(const std::string& orderBookString);
+    void DetermineOrder();
 };
 
 #endif 	/* ORDERBOOK_H */

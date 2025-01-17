@@ -29,24 +29,30 @@ bool Client::SetupConnections() {
     return true;
 };
 
-bool Client::CreateConnections() {
+bool Client::CreateConnections(const int quantity, const int number_of_ticks) {
     // Communication loop
-    std::string message = "This is the client";
+    std::string message = "0";
     char buffer[BUFFER_SIZE] = {0};
     OrderBook orderBook = OrderBook("ABC ");
+    //orderBook
     while (true) {
         // Read the server's response
-        memset(buffer, 0, BUFFER_SIZE);
+        std::fill(buffer, buffer + BUFFER_SIZE, 0);
         int bytes_read = read(socket_, buffer, BUFFER_SIZE);
         if (bytes_read <= 0) {
             BOOST_LOG_TRIVIAL(error) << "Server disconnected";
             break;
         }
         orderBook.ParseOrderBookData(std::string(buffer, bytes_read));
-
+        orderBook.DetermineOrder();
+        send_order(orderBook.GetTicker(),
+                    true,
+                    quantity,
+                    10.0
+        );
         BOOST_LOG_TRIVIAL(info) << "Server response: " << buffer << ".";
         // Send the message to the server
-        send(socket_, message.c_str(), message.length(), 0);
+        send(socket_, message.c_str(), message.length(), MSG_DONTWAIT);
     }
 
     // Close the socket

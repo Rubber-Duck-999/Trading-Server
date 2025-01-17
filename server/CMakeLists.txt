@@ -23,7 +23,7 @@ set (INCL_DIR include)
 set (CORE_DIR core)
 
 # Compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall -Wno-error")
 
 include_directories(${Boost_INCLUDE_DIRS}
                     /usr/include
@@ -33,9 +33,9 @@ include_directories(${Boost_INCLUDE_DIRS}
 link_directories(${Boost_LIBRARY_DIRS})
 # Important: Include all source files on this list in the right order
 set (SOURCE
+    ${SRC_DIR}/main.cc
     ${SRC_DIR}/server.cc
     ${CORE_DIR}/orderbook.cc
-    ${SRC_DIR}/main.cc
 )
 
 link_directories(/usr/local/lib)

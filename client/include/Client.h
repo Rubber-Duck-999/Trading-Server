@@ -3,7 +3,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include "logging.h"
 #include "OrderBook.h"
 #include "constants.h"
 
@@ -20,8 +19,8 @@ public:
         ip_address_ = "127.0.0.1";
     };
     bool SetupConnections();
-    bool CreateConnections();
-    void send_order(std::string_view ticker, bool is_bid, long quantity, double price);
+    bool CreateConnections(const int cumulative_quantity, const int number_of_ticks);
+    void send_order(std::string_view ticker, bool is_bid, long quantity, double price) {};
 };
 
 #endif 

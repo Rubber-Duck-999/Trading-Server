@@ -78,14 +78,20 @@ void Server::HandleClientConnection(OrderBook orderBook) {
         BOOST_LOG_TRIVIAL(info) << "Start message session";
         while (true) {
             // Send a response back to the client
+            std::lock_guard<std::mutex> lock(order_book_mutex_);
             std::string orderBookString = orderBook.GetOrderBookData();
-            send(client_file_descriptor_,
+            // Non blocking flag for sending
+            ssize_t send_status = send(client_file_descriptor_,
                 orderBookString.c_str(),
                 orderBookString.length(),
-                0);
+                MSG_DONTWAIT);
+            if (send_status == -1) {
+                BOOST_LOG_TRIVIAL(error) << "Local error in sending detected";
+                break;
+            }
 
             // REset buffer for client message
-            memset(buffer, 0, BUFFER_SIZE);
+            std::fill(buffer, buffer + BUFFER_SIZE, 0);
             int bytes_read = read(client_file_descriptor_, buffer, BUFFER_SIZE);
             if (bytes_read <= 0) {
                 BOOST_LOG_TRIVIAL(info) << "Client disconnected";

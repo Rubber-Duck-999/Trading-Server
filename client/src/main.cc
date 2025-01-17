@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    if (!client.CreateConnections()) {
+    if (!client.CreateConnections(cumulative_quantity, number_of_ticks)) {
         BOOST_LOG_TRIVIAL(error) << "Exiting app";
         return 1;
     }
