@@ -16,8 +16,9 @@ public:
 private:
     std::mutex order_book_mutex_; 
     int server_file_descriptor_;
-    int client_file_descriptor_;
-    void HandleClientConnection(OrderBook orderBook);
+    // No max size
+    std::vector<int> client_file_descriptors_;
+    void HandleClientConnection(int client_file_descriptor, OrderBook orderBook);
 };
 
 #endif // SERVER_H

@@ -34,7 +34,8 @@ bool Client::CreateConnections(const int quantity, const int number_of_ticks) {
     std::string message = "0";
     char buffer[BUFFER_SIZE] = {0};
     OrderBook orderBook = OrderBook("ABC ");
-    //orderBook
+    // Marker for knowing first time
+    bool sent_first_order = false;
     while (true) {
         // Read the server's response
         std::fill(buffer, buffer + BUFFER_SIZE, 0);
@@ -44,14 +45,40 @@ bool Client::CreateConnections(const int quantity, const int number_of_ticks) {
             break;
         }
         orderBook.ParseOrderBookData(std::string(buffer, bytes_read));
-        orderBook.DetermineOrder();
-        send_order(orderBook.GetTicker(),
-                    true,
-                    quantity,
-                    10.0
-        );
-        BOOST_LOG_TRIVIAL(info) << "Server response: " << buffer << ".";
-        // Send the message to the server
+        orderBook.DetermineOrders();
+
+        if (sent_first_order) {
+            // Clear order beforee sending first order
+            send_order(orderBook.GetTicker(),
+                        false,
+                        quantity,
+                        0
+            );
+            send_order(orderBook.GetTicker(),
+                        true,
+                        quantity,
+                        0
+            );
+        }
+        if (orderBook.GetBestAsk() > 0) {
+            // Ask order
+            send_order(orderBook.GetTicker(),
+                        false,
+                        quantity,
+                        orderBook.GetBestAsk()
+            );
+            sent_first_order = true;
+        }
+        if (orderBook.GetBestBid() > 0) {
+            // Bid order
+            send_order(orderBook.GetTicker(),
+                        true,
+                        quantity,
+                        orderBook.GetBestBid()
+            );
+            sent_first_order = true;
+        }
+        // Send the message to the server as send order is the real function
         send(socket_, message.c_str(), message.length(), MSG_DONTWAIT);
     }
 

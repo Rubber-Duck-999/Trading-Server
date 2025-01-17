@@ -25,14 +25,17 @@ private:
     // Client points
     int cumulative_quantity_;
     int number_of_ticks_;
-    std::string best_bid_;
-    std::string best_ask_;
+    int best_bid_;
+    int best_ask_;
+    int bid_sum_;
+    int ask_sum_;
     // Generate random prices and quantities
     std::string GeneratePrice(int min, int max);
     std::string GenerateQuantity(int min, int max);
     // Random initializer
     void InitializeValues();
-    void DetermineBestBid();
+    void DetermineBidOrder();
+    void DetermineAskOrder();
 public:
     OrderBook(const std::string& ticker);
     // GettTers
@@ -51,10 +54,10 @@ public:
     std::array<std::string, 5> GetAskQuantities() const {
         return ask_quantities_;
     };
-    std::string GetBestBid() const {
+    int GetBestBid() const {
         return best_bid_;
     }
-    std::string GetBestAsk() const {
+    int GetBestAsk() const {
         return best_ask_;
     };
     // Setters
@@ -72,7 +75,10 @@ public:
     };
     std::string GetOrderBookData();
     void ParseOrderBookData(const std::string& orderBookString);
-    void DetermineOrder();
+    void DetermineOrders() {
+        DetermineAskOrder();
+        DetermineBidOrder();
+    };
 };
 
 #endif 	/* ORDERBOOK_H */

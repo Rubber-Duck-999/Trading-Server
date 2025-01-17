@@ -4,6 +4,8 @@ Example application based off coding assignment
 
 ## Build Applications
 
+I have used docker and CMake to ensure some easy build and test on another users machine. In case they do not have gcc/boost/cmake installed.
+
 ### Dependencies
 
 (Linux)
@@ -39,12 +41,37 @@ Mermaid JS design - [VS Code](https://marketplace.visualstudio.com/items?itemNam
 
 ```mermaid
 ---
-title: State
+title: State TCP Server
 ---
 stateDiagram-v2
-    [*] --> Copied
-    Copied --> Written
-    Written --> [*]
+    [*] --> Initializing : Start TCP Server
+
+    Initializing --> Listening : Setup Connections for TCP Clients
+    Listening --> Accepting : Incoming TCP Client Connection
+    Accepting --> Connected : Connection Established
+    Connected --> HandlingClient : Start Client Thread
+    HandlingClient --> SendingData : Send OrderBook Data
+    SendingData --> HandlingClient : Wait and Repeat
+    SendingData --> Disconnected : Error or Client Disconnect
+    Disconnected --> [*] : Close Client Connection
+```
+
+---
+
+```mermaid
+---
+title: State TCP Client
+---
+stateDiagram-v2
+    [*] --> Initializing : Start TCP Client
+    Initializing --> Connecting : Setup Connections for TCP Clients
+    Connecting --> Connected : Connection Established
+    Connected --> ReceiveData : Receive OrderBook Data
+    ReceiveData --> DetermineOrders : Determine whether to bid for data
+    DetermineOrders --> SendOrder : Send OrderBook Bid&/Ask
+    SendOrder --> ReceiveData : Wait and repeat
+    ReceiveData --> Disconnected : Error or Server Disconnect
+    Disconnected --> [*] : Close Client Connection
 ```
 
 ### Assumptions & Explanations

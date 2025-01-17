@@ -20,3 +20,16 @@ services:
       NUMBER: "0"
     depends_on:
       - server
+  client-2:
+    container_name: tcp_client_2
+    image: tcp-client
+    build:
+      context: .
+      dockerfile: ./client/Dockerfile
+    restart: always
+    network_mode: host
+    environment:
+      QUANTITY: "1"
+      NUMBER: "3"
+    depends_on:
+      - server
