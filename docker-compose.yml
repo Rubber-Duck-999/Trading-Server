@@ -7,13 +7,16 @@ services:
       dockerfile: ./server/Dockerfile
     restart: always
     network_mode: host
-  client:
-    container_name: tcp_client
+  client-1:
+    container_name: tcp_client_1
     image: tcp-client
     build:
       context: .
       dockerfile: ./client/Dockerfile
     restart: always
     network_mode: host
+    environment:
+      QUANTITY: "1"
+      NUMBER: "1"
     depends_on:
       - server

@@ -23,9 +23,10 @@ private:
     // Generate random prices and quantities
     std::string GeneratePrice(int min, int max);
     std::string GenerateQuantity(int min, int max);
+    // Random initializer
+    void InitializeValues();
 public:
     OrderBook(const std::string& ticker);
-
     // GettTers
     std::string GetTicker() const;
     std::array<std::string, 5> GetBidPrices() const {
@@ -40,7 +41,6 @@ public:
     std::array<std::string, 5> GetAskQuantities() const {
         return ask_quantities_;
     };
-
     // Setters
     void SetBidPrices(const std::array<std::string, 5>& bidPrices) {
         bid_prices_ = bidPrices;
@@ -54,9 +54,8 @@ public:
     void SetAskQuantities(const std::array<std::string, 5>& askQuantities) {
         ask_quantities_ = askQuantities;
     };
-
-    // Method to generate random data for the order book
     std::string GetOrderBookData();
+    void ParseOrderBookData(const std::string& orderBookString);
 };
 
 #endif 	/* ORDERBOOK_H */

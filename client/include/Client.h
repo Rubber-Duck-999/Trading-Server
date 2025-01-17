@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include "logging.h"
+#include "OrderBook.h"
 #include "constants.h"
 
 #ifndef CLIENT_h
@@ -20,6 +21,7 @@ public:
     };
     bool SetupConnections();
     bool CreateConnections();
+    void send_order(std::string_view ticker, bool is_bid, long quantity, double price);
 };
 
 #endif 

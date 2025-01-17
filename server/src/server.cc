@@ -92,7 +92,7 @@ void Server::HandleClientConnection(OrderBook orderBook) {
                 break;
             }
 
-            BOOST_LOG_TRIVIAL(info) << "Received from client: " << buffer << ".";
+            BOOST_LOG_TRIVIAL(debug) << "Received from client: " << buffer << ".";
 
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }

@@ -34,7 +34,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 # Important: Include all source files on this list in the right order
 set (SOURCE
     ${SRC_DIR}/server.cc
-    ${SRC_DIR}/orderbook.cc
+    ${CORE_DIR}/orderbook.cc
     ${SRC_DIR}/main.cc
 )
 

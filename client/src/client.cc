@@ -1,5 +1,6 @@
 #include "Client.h"
 
+
 bool Client::SetupConnections() {
     struct sockaddr_in server_address;
 
@@ -32,19 +33,20 @@ bool Client::CreateConnections() {
     // Communication loop
     std::string message = "This is the client";
     char buffer[BUFFER_SIZE] = {0};
+    OrderBook orderBook = OrderBook("ABC ");
     while (true) {
-        // Send the message to the server
-        send(socket_, message.c_str(), message.length(), 0);
-
         // Read the server's response
         memset(buffer, 0, BUFFER_SIZE);
         int bytes_read = read(socket_, buffer, BUFFER_SIZE);
         if (bytes_read <= 0) {
-            BOOST_LOG_TRIVIAL(info) << "Server disconnected";
+            BOOST_LOG_TRIVIAL(error) << "Server disconnected";
             break;
         }
+        orderBook.ParseOrderBookData(std::string(buffer, bytes_read));
 
         BOOST_LOG_TRIVIAL(info) << "Server response: " << buffer << ".";
+        // Send the message to the server
+        send(socket_, message.c_str(), message.length(), 0);
     }
 
     // Close the socket
