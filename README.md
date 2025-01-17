@@ -6,6 +6,8 @@ Example application based off coding assignment
 
 I have used docker and CMake to ensure some easy build and test on another users machine. In case they do not have gcc/boost/cmake installed.
 
+As well to demonstrate the multi subscriber server/client model.
+
 ### Dependencies
 
 (Linux)
@@ -20,12 +22,10 @@ Dockerfiles are included to help build on environments so that the software vers
 docker compose build
 ```
 
-If you want full build outputs from docker
+If you want full build outputs from docker from scratch (this is using a base ubuntu image so will be a large build on first build with cache)
 ```bash
 docker compose build --progress=plain --no-cache
 ```
-
-Using CMake and Docker for build simplicity
 
 ## Run Application
 
@@ -33,7 +33,7 @@ Using CMake and Docker for build simplicity
 docker compose up
 ```
 
-The client is set to constant Q and N values
+The client is set to Q and N values that allow between 20 and 0
 
 ## Design
 
@@ -90,3 +90,4 @@ stateDiagram-v2
 - No latency for updating orders.
 - Orders must be canceled before sending new ones.
 - Orders are never rejected.
+- Max values put on quantity and tick number for time sake

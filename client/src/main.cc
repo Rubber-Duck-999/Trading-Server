@@ -15,6 +15,14 @@ int main(int argc, char* argv[]) {
         // Catt the input strings to ints
         cumulative_quantity = std::stoi(argv[1]);
         number_of_ticks = std::stoi(argv[2]);
+        if (cumulative_quantity > 20 || cumulative_quantity < 0) {
+            BOOST_LOG_TRIVIAL(warning) << "Provide a cumulative quantity between 20 and 0";
+            return 0;
+        }
+        if (number_of_ticks > 20 || number_of_ticks < 0) {
+            BOOST_LOG_TRIVIAL(warning) << "Provide a number of ticks between 20 and 0";
+            return 0;
+        }
     } catch (const std::invalid_argument& e) {
         BOOST_LOG_TRIVIAL(error) << "Invalid arguments provided. Both inputs must be integers.";
         return 1;

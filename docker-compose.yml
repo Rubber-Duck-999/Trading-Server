@@ -13,7 +13,6 @@ services:
     build:
       context: .
       dockerfile: ./client/Dockerfile
-    restart: always
     network_mode: host
     environment:
       QUANTITY: "1"
@@ -26,10 +25,9 @@ services:
     build:
       context: .
       dockerfile: ./client/Dockerfile
-    restart: always
     network_mode: host
     environment:
-      QUANTITY: "1"
+      QUANTITY: "100"
       NUMBER: "3"
     depends_on:
       - server
