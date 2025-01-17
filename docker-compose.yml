@@ -17,7 +17,7 @@ services:
     network_mode: host
     environment:
       QUANTITY: "1"
-      NUMBER: "0"
+      NUMBER: "1"
     depends_on:
       - server
   client-2:
