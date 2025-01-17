@@ -10,7 +10,7 @@ COPY ./core ./core
 COPY ./server ./
 # Folder for CMAKE for executable creation
 RUN mkdir build
-RUN cd build && cmake .. && make
+RUN cd build && cmake .. && make 
 # What to call in order to run the exe
 CMD [ "./build/server" ]
 

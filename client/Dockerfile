@@ -11,6 +11,6 @@ COPY ./client ./
 
 # Folder for CMAKE for executable creation
 RUN mkdir build
-RUN cd build && cmake .. && make
+RUN cd build && cmake .. VERBOSE=1 && make
 # What to call in order to run the exe
 CMD [ "sh", "-c", "./build/client $QUANTITY $NUMBER"]

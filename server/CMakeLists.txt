@@ -23,7 +23,7 @@ set (INCL_DIR include)
 set (CORE_DIR core)
 
 # Compiler flags
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall -Wno-error")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3 -Wall -Werror")
 
 include_directories(${Boost_INCLUDE_DIRS}
                     /usr/include

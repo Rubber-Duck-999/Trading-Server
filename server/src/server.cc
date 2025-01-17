@@ -76,7 +76,6 @@ void Server::AcceptConnections(OrderBook orderBook) {
 void Server::HandleClientConnection(int client_file_descriptor, OrderBook orderBook) {
     try {
         // Communicate with the client
-        char buffer[BUFFER_SIZE] = {0};
         BOOST_LOG_TRIVIAL(info) << "Start message session";
         while (true) {
             // Send a response back to the client
